@@ -94,7 +94,7 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	private void update() {
-		if(mouse.getMouseIn()){
+		if (mouse.getMouseIn()) {
 			world.update(mouse);
 		}
 	}

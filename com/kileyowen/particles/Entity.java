@@ -71,8 +71,8 @@ public class Entity implements Renderable {
 		this.friction = friction;
 		return this;
 	}
-	
-	public int getId(){
+
+	public int getId() {
 		return id;
 	}
 
@@ -107,7 +107,7 @@ public class Entity implements Renderable {
 	public Rect getRect() {
 		int x = getX();
 		int y = getY();
-		return new Rect(x, y, width + x, height + y);
+		return new Rect(x, y, width + x - 1, height + y - 1);
 	}
 
 	public int getWidth() {
@@ -117,17 +117,25 @@ public class Entity implements Renderable {
 	public int getHeight() {
 		return height;
 	}
-	
-	public boolean isStationary(){
+
+	public boolean isStationary() {
 		return stationary;
 	}
-	
+
+	public void collided(World world, CollisionGroup group, Entity entity) {
+
+	}
+
 	public boolean checkCollide(Entity other) {
+		return checkCollide(other.getRect());
+	}
+	
+	public boolean checkCollide(Rect rect){
 		if (getWidth() > 1 || getHeight() > 1) {
-			return getRect().doesRectOverlap(other.getRect());
-		}else{
-			int[] point = {getX(), getY()};
-			return other.getRect().doesPointOverlap(point);
+			return rect.doesRectOverlap(getRect());
+		} else {
+			int[] point = { getX(), getY() };
+			return rect.doesPointOverlap(point);
 		}
 	}
 
@@ -143,9 +151,18 @@ public class Entity implements Renderable {
 	}
 
 	public void update(World world, Mouse mouse) {
-		if(!isStationary()){
+		if (!isStationary()) {
+			setSpeed(getSpeedX() * getFriction(), getSpeedY() * getFriction());
 			posX += speedX;
 			posY += speedY;
+		}
+	}
+
+	public void destroy(World world) {
+		world.remove(this);
+		CollisionGroup cg = getCollisionGroup();
+		if (cg != null) {
+			cg.remove(this);
 		}
 	}
 }

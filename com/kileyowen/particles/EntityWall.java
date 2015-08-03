@@ -5,14 +5,14 @@ public class EntityWall extends Entity {
 	public EntityWall(int id) {
 		super(id);
 	}
-	
+
 	@Override
-	public boolean isStationary(){
+	public boolean isStationary() {
 		return true;
 	}
-	
+
 	@Override
-	public void update(World world, Mouse mouse){
-		
+	public void update(World world, Mouse mouse) {
+		super.update(world, mouse);
 	}
 }

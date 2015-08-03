@@ -9,50 +9,61 @@ public class CollisionGroup {
 	public CollisionGroup() {
 		entities = new ArrayList<Entity>();
 	}
-	
-	public CollisionGroup add(Entity entity){
+
+	public CollisionGroup add(Entity entity) {
 		entities.add(entity);
 		return this;
 	}
-	
-	public boolean remove(Entity entity){
+
+	public boolean remove(Entity entity) {
 		return entities.remove(entity);
 	}
-	
-	public boolean contains(Entity entity){
+
+	public boolean contains(Entity entity) {
 		return entities.contains(entity);
 	}
-	
-	public int size(){
+
+	public int size() {
 		return entities.size();
 	}
-	
-	public Entity get(int index){
+
+	public Entity get(int index) {
 		return entities.get(index);
 	}
-	
-	public CollisionGroup concat(CollisionGroup group){
+
+	public CollisionGroup concat(CollisionGroup group) {
 		CollisionGroup temp = new CollisionGroup();
-		for(int i = 0; i < size(); i++){
+		for (int i = 0; i < size(); i++) {
 			temp.add(get(i));
 		}
-		for(int i = 0; i < group.size(); i++){
+		for (int i = 0; i < group.size(); i++) {
 			Entity e = group.get(i);
-			if(!temp.contains(e)){
+			if (!temp.contains(e)) {
 				temp.add(e);
 			}
 		}
 		return temp;
 	}
 	
-	public List<Entity> checkCollide(Entity entity){
+	public List<Entity> checkCollide(Rect rect){
 		List<Entity> collided = new ArrayList<Entity>();
-		for(int i = 0;i < size();i++){
+		for (int i = 0; i < size(); i++) {
 			Entity temp = get(i);
-			if(temp.equals(entity)){
+			if (temp.checkCollide(rect)) {
+				collided.add(temp);
+			}
+		}
+		return collided;
+	}
+
+	public List<Entity> checkCollide(Entity entity) {
+		List<Entity> collided = new ArrayList<Entity>();
+		for (int i = 0; i < size(); i++) {
+			Entity temp = get(i);
+			if (temp.getId() == entity.getId()) {
 				continue;
 			}
-			if(temp.checkCollide(entity)){
+			if (entity.checkCollide(temp)) {
 				collided.add(temp);
 			}
 		}
