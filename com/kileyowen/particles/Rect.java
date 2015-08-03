@@ -40,7 +40,7 @@ public class Rect {
 	public boolean doesPointOverlap(int[] point){
 		int x = point[0];
 		int y = point[1];
-		if(x >= getX0() && x <= getX1() && y >= getY0() && y <= getY1()){
+		if(x >= getX0() && x < getX1() && y >= getY0() && y < getY1()){
 			return true;
 		}
 		return false;

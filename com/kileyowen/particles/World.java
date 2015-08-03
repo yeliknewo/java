@@ -40,6 +40,17 @@ public class World implements Renderable {
 				.setPos((width - wallGirth) / 2, (height - wallGirth * 3) / 2));
 		entities.add(new EntityWall(lastId++).setCollisionGroup(walls).setSize(wallGirth, wallGirth).setRGB(255, 255, 255)
 				.setPos((width - wallGirth * 3) / 2, (height - wallGirth * 3) / 2));
+		
+		//left center
+		entities.add(new EntityWall(lastId++).setCollisionGroup(walls).setSize(wallGirth, wallGirth).setRGB(255, 255, 255)
+				.setPos((width - wallGirth * 5) / 2 - 2, (height - wallGirth) / 2));
+		entities.add(new EntityWall(lastId++).setCollisionGroup(walls).setSize(wallGirth, wallGirth).setRGB(255, 255, 255)
+				.setPos((width - wallGirth * 7) / 2 - 2, (height - wallGirth * 3) / 2));
+		entities.add(new EntityWall(lastId++).setCollisionGroup(walls).setSize(wallGirth, wallGirth).setRGB(255, 255, 255)
+				.setPos((width - wallGirth * 5) / 2 - 2, (height - wallGirth * 5) / 2));
+
+		
+		
 	}
 
 	public int getCount() {
@@ -58,13 +69,12 @@ public class World implements Renderable {
 	}
 
 	public void update(Mouse mouse) {
-		if (mouse.getRightButton()) {
+		if (mouse.getRightButton() && particles.size() == 0) {
 			entities.add(new EntityDot(lastId++, walls).setPos(mouse.getX(), mouse.getY()).setAccel(1).setRGB(255, 0, 255)
 					.setCollisionGroup(particles).setFriction(0.97f));
 		}
 		for (int i = 0; i < entities.size(); i++) {
 			entities.get(i).update(this, mouse);
 		}
-		System.out.println(Runtime.getRuntime().totalMemory() + " " + Runtime.getRuntime().freeMemory());
 	}
 }
