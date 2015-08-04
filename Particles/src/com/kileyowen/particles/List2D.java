@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class List2D<T> {
-	List<T> list;
+	private List<T> list;
 	private int width;
 	private int height;
 

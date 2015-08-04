@@ -1,7 +1,5 @@
 package com.kileyowen.particles;
 
-import java.util.List;
-
 public class EntityBlockade extends Entity {
 	private CollisionGroup particles;
 	private int size;

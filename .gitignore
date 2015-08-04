@@ -1,0 +1,9 @@
+# temp files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+.metadata
+.recommenders
+lwjgl
+*/.settings
