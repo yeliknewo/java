@@ -51,7 +51,7 @@ public class List2D<T> {
 		return height;
 	}
 
-	public int getLength() {
+	public int getSize() {
 		return list.size();
 	}
 

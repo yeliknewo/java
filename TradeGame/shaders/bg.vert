@@ -1,11 +1,19 @@
 #version 450 core
 
-layout (location = 0) out vec4 color;
-layout (location = 1) in vec2 texCoord;
+layout ( location = 0 ) in vec4 position;
+layout ( location = 1 ) in vec2 texCoord;
 
-uniform sampler2D u_tex;
+uniform mat4 u_pr_matrix;
+uniform mat4 u_vw_matrix;
+uniform mat4 u_ml_matrix;
+
+out Data{
+	vec2 texCoord;
+} DataOut;
 
 void main()
 {
-	color = texture(u_tex, texCoord);
+	DataOut.texCoord = texCoord;
+	
+	gl_Position = u_pr_matrix * u_vw_matrix * u_ml_matrix * position;
 }

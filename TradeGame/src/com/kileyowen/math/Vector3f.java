@@ -1,32 +1,45 @@
 package com.kileyowen.math;
 
 public class Vector3f {
-	
+
 	private float[] coords;
 
 	public Vector3f() {
-		createCoords(0f,0f,0f);
+		coords = new float[3];
 	}
-	
-	public Vector3f(float x, float y, float z){
-		createCoords(x,y,z);
-	}
-	
-	private void createCoords(float x, float y, float z){
+
+	public Vector3f setCoords(float x, float y, float z) {
 		coords[0] = x;
 		coords[1] = y;
 		coords[2] = z;
+		return this;
 	}
-	
-	public float getX(){
+
+	public Vector3f addCoords(float x, float y, float z) {
+		coords[0] += x;
+		coords[1] += y;
+		coords[2] += z;
+		return this;
+	}
+
+	public Vector3f add(Vector3f vector) {
+		addCoords(vector.getX(), vector.getY(), vector.getZ());
+		return this;
+	}
+
+	public Vector3f negate() {
+		return new Vector3f().setCoords(-getX(), -getY(), -getZ());
+	}
+
+	public float getX() {
 		return coords[0];
 	}
-	
-	public float getY(){
+
+	public float getY() {
 		return coords[1];
 	}
-	
-	public float getZ(){
+
+	public float getZ() {
 		return coords[2];
 	}
 }

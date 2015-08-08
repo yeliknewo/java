@@ -45,10 +45,6 @@ public class Shader {
 		shader1 = new Shader("shaders/bg.vert", "shaders/bg.frag");
 	}
 
-	public static void loadShader(String vertShader, String fragShader) {
-		new Shader(vertShader, fragShader);
-	}
-
 	public void setUniform1i(String name, int value) {
 		if (!enabled)
 			enable();

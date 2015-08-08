@@ -7,6 +7,7 @@ import org.lwjgl.opengl.*;
 import java.nio.ByteBuffer;
 
 import com.kileyowen.math.Matrix4f;
+import com.kileyowen.math.Vector3f;
 import com.kileyowen.tradegame.opengl.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -39,8 +40,8 @@ public class Main implements Runnable {
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-		int WIDTH = 300;
-		int HEIGHT = 300;
+		int WIDTH = 640;
+		int HEIGHT = 480;
 
 		aspectRatio = WIDTH / HEIGHT;
 
@@ -65,31 +66,29 @@ public class Main implements Runnable {
 		title = "TradeGame";
 
 		GLContext.createFromCurrent();
-
 		System.out.println("OpenGL: " + glGetString(GL_VERSION));
+
+		world = new World();
+
+		glClearColor(1f, 0, 0, 0);
 
 		glEnable(GL_DEPTH_TEST);
 
 		glActiveTexture(GL_TEXTURE1);
 
-		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
 		Shader.loadAll();
 
 		Shader.shader1.enable();
-		Matrix4f perspectiveMatrix = Matrix4f.orthographic(-10f, 10f, -10f / aspectRatio, 10f / aspectRatio, -10f, 10f);
+		Matrix4f perspectiveMatrix = Matrix4f.orthographic(-10f, 10f, -10f, 10f, -10f, 10f);
 		Shader.shader1.setUniformMat4f("u_vw_matrix", Matrix4f.translate(world.getCamera()));
 		Shader.shader1.setUniformMat4f("u_pr_matrix", perspectiveMatrix);
-		Shader.shader1.setUniform1i("tex", 1);
-
+		Shader.shader1.setUniform1i("u_tex", 1);
 		Shader.shader1.disable();
 	}
 
 	public void update() {
 		glfwPollEvents();
-		if (KeyboardHandler.isKeyDown(GLFW_KEY_SPACE)) {
-			System.out.println("Space Key Pressed");
-		}
+		world.update();
 		if (glfwWindowShouldClose(window) == GL_TRUE) {
 			stop();
 		}

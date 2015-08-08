@@ -8,7 +8,7 @@ public class Matrix4f extends List2D<Float> {
 
 	public Matrix4f() {
 		super(4, 4);
-		for (int i = 0; i < getLength(); i++) {
+		for (int i = 0; i < getSize(); i++) {
 			setI(i, 0f);
 		}
 	}
@@ -33,22 +33,47 @@ public class Matrix4f extends List2D<Float> {
 		return matrix;
 	}
 
+	public static Matrix4f perspective(float left, float right, float bottom, float top, float near, float far,
+			float FoV, float aspect) {
+		float y2 = near * (float) Math.tan(Math.toRadians(FoV));
+		float y1 = -y2;
+		float x1 = y1 * aspect;
+		float x2 = y2 * aspect;
+		return frustrum(x1, x2, y1, y2, near, far);
+	}
+
+	public static Matrix4f frustrum(float left, float right, float bottom, float top, float near, float far) {
+		Matrix4f matrix = identity();
+
+		matrix.set(0, 0, (2 * near) / (right - left));
+		matrix.set(1, 1, (2 * near) / (top - bottom));
+		matrix.set(2, 2, (near + far) / (near - far));
+		matrix.set(3, 3, 0f);
+
+		matrix.set(2, 0, (right + left) / (right - left));
+		matrix.set(2, 1, (top + bottom) / (top - bottom));
+		matrix.set(2, 3, -1f);
+		matrix.set(3, 2, (-2 * far * near) / (far - near));
+
+		return matrix;
+	}
+
 	public static Matrix4f orthographic(float left, float right, float bottom, float top, float near, float far) {
 		Matrix4f matrix = identity();
 		matrix.set(0, 0, 2 / (right - left));
-		matrix.set(1, 1, 2 / (top / bottom));
-		matrix.set(2, 3, -2 / (far - near));
-		matrix.set(4, 0, -(right + left) / (right - left));
-		matrix.set(4, 1, -(top + bottom) / (top - bottom));
-		matrix.set(4, 3, -(far + near) / (far - near));
+		matrix.set(1, 1, 2 / (top - bottom));
+		matrix.set(2, 2, -2 / (far - near));
+		matrix.set(3, 0, -(right + left) / (right - left));
+		matrix.set(3, 1, -(top + bottom) / (top - bottom));
+		matrix.set(3, 2, -(far + near) / (far - near));
 		return matrix;
 	}
 
 	public static Matrix4f translate(Vector3f vector) {
 		Matrix4f matrix = identity();
-		matrix.set(4, 0, vector.getX());
-		matrix.set(4, 1, vector.getY());
-		matrix.set(4, 2, vector.getZ());
+		matrix.set(0, 3, vector.getX());
+		matrix.set(1, 3, vector.getY());
+		matrix.set(2, 3, vector.getZ());
 		return matrix;
 	}
 
@@ -68,7 +93,7 @@ public class Matrix4f extends List2D<Float> {
 	}
 
 	public static Matrix4f rotateYDeg(float degrees) {
-		return rotateX((float) Math.toRadians(degrees));
+		return rotateY((float) Math.toRadians(degrees));
 	}
 
 	public static Matrix4f rotateY(float radians) {
@@ -83,7 +108,7 @@ public class Matrix4f extends List2D<Float> {
 	}
 
 	public static Matrix4f rotateZDeg(float degrees) {
-		return rotateX((float) Math.toRadians(degrees));
+		return rotateZ((float) Math.toRadians(degrees));
 	}
 
 	public static Matrix4f rotateZ(float radians) {
@@ -95,6 +120,11 @@ public class Matrix4f extends List2D<Float> {
 		matrix.set(0, 1, -sin);
 		matrix.set(1, 1, cos);
 		return matrix;
+	}
+
+	public static Matrix4f rotateAll(Vector3f vec) {
+		return Matrix4f.rotateX(vec.getX())
+				.multiply(Matrix4f.rotateY(vec.getY()).multiply(Matrix4f.rotateZ(vec.getZ())));
 	}
 
 	public Matrix4f multiply(Matrix4f matrix) {

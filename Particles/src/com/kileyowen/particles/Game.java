@@ -105,7 +105,7 @@ public class Game extends Canvas implements Runnable {
 			createBufferStrategy(3);
 			return;
 		}
-		for (int i = 0; i < view.getLength(); i++) {
+		for (int i = 0; i < view.getSize(); i++) {
 			view.setI(i, 0);
 		}
 		world.render(view);
