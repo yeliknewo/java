@@ -1,4 +1,4 @@
-package com.kileyowen.neuralnetwork;
+package com.kileyowen.geneticalgorithm;
 
 public class Color {
 
