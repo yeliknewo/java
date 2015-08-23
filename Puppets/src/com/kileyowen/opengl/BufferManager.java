@@ -45,8 +45,8 @@ public class BufferManager {
 		glBindVertexArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	
-	public void draw(){
+
+	public void draw() {
 		bind();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_BYTE, 0);
 		unbind();

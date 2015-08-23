@@ -18,14 +18,13 @@ public class Neuron {
 		this.numInputs = numInputs;
 		this.weights = new ArrayList<Double>();
 		while (weights.size() < numInputs + 1) {
-			this.weights.add(Main.rand.nextDouble() * (maxWeight - minWeight) + minWeight);
+			this.weights.add(NeuralNetwork.rand.nextDouble() * (maxWeight - minWeight) + minWeight);
 		}
 	}
 
 	public Double fire(List<Double> input) {
 		if (input.size() != numInputs) {
-			System.err.println("Invalid Input for Neuron");
-			return null;
+			throw (new Error("Invalid Input for Neuron"));
 		}
 		double activationSum = -1 * weights.get(weights.size() - 1);
 		for (int i = 0; i < input.size(); i++) {
@@ -42,9 +41,9 @@ public class Neuron {
 		return weights.size();
 	}
 
-	public void setAllWeights(List<Double> subList) {
-		for (int i = 0; i < weights.size(); i++) {
-			weights.set(i, subList.get(i));
+	public void setAllWeights(List<Double> weights) {
+		for (int i = 0; i < this.weights.size(); i++) {
+			this.weights.set(i, weights.get(i));
 		}
 	}
 }

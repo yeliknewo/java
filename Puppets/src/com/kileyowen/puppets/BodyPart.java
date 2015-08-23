@@ -64,7 +64,7 @@ public class BodyPart implements GameObject {
 
 	@Override
 	public void update() {
-
+		
 	}
 
 	@Override

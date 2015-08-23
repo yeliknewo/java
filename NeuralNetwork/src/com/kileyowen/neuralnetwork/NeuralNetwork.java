@@ -2,23 +2,43 @@ package com.kileyowen.neuralnetwork;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class NeuralNetwork {
 	private List<NeuralLayer> layers;
+	public static Random rand;
+	private int numInputs;
+	private int numOutputs;
 
-	public NeuralNetwork(int numInputs, int numOutputs, int numHiddenLayers, double minWeight, double maxWeight) {
-		int hiddenLayerSize = numInputs;
+	public NeuralNetwork(int numInputs, int numOutputs, int numLayers, double minWeight, double maxWeight) {
+		this.numInputs = numInputs;
+		this.numOutputs = numOutputs;
+		rand = new Random();
 		layers = new ArrayList<NeuralLayer>();
-		while (layers.size() < numHiddenLayers) {
-			hiddenLayerSize -= Math
-					.round((float) (hiddenLayerSize - numOutputs) / (float) (numHiddenLayers - layers.size()));
-			layers.add(new NeuralLayer(numInputs, hiddenLayerSize, minWeight, maxWeight));
-			numInputs = hiddenLayerSize;
+		double layerMod = ((double) numInputs - (double) numOutputs) / (double) numLayers, layerSize = numInputs,
+				currentInputs = numInputs;
+		while (layers.size() < numLayers) {
+			layerSize -= layerMod;
+			layers.add(new NeuralLayer((int) Math.round(currentInputs), (int) Math.round(layerSize), minWeight,
+					maxWeight));
+			currentInputs = layerSize;
 		}
 	}
 
-	public NeuralNetwork(List<NeuralLayer> layers) {
+	public NeuralNetwork(int numInputs, List<NeuralLayer> layers) {
+		this.numInputs = numInputs;
 		this.layers = layers;
+	}
+
+	public NeuralNetwork clone() {
+		NeuralNetwork copy = cloneWeightless();
+		copy.setAllNeuronWeights(getAllNeuronWeights());
+		return copy;
+	}
+
+	public NeuralNetwork cloneWeightless() {
+		NeuralNetwork copy = new NeuralNetwork(numInputs, numOutputs, getLayerCount(), 0, 0);
+		return copy;
 	}
 
 	public List<Double> fire(List<Double> input) {
@@ -52,5 +72,17 @@ public class NeuralNetwork {
 			weightCount += layers.get(i).getWeightCount();
 		}
 		return weightCount;
+	}
+
+	public int getLayerCount() {
+		return layers.size();
+	}
+
+	public NeuralLayer getLayer(int layerIndex) {
+		return layers.get(layerIndex);
+	}
+
+	public int getNumInputs() {
+		return numInputs;
 	}
 }

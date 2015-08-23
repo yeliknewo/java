@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.kileyowen.geneticalgorithm.Color;
-import com.kileyowen.geneticalgorithm.Image;
+import com.kileyowen.utilities.Image;
 
 public class Main {
 	public static Random rand;
@@ -44,12 +44,6 @@ public class Main {
 		return 1d / (total - sum);
 	}
 
-	private static void setAllWeights(List<NeuralNetwork> networks, List<List<Double>> weights) {
-		for (int i = 0; i < networks.size(); i++) {
-			networks.get(i).setAllNeuronWeights(weights.get(i));
-		}
-	}
-
 	private static int findSpot(List<Double> fitnessList, double fitness) {
 		for (int i = 0; i < fitnessList.size(); i++) {
 			if (fitness > fitnessList.get(i)) {
@@ -57,6 +51,40 @@ public class Main {
 			}
 		}
 		return 0;
+	}
+
+	private static void draw(List<Double> workingList, List<Double> fired, int imageWidth, int imageHeight) {
+		int x0 = (int) Math.round(fired.get(0) * imageWidth), x1 = (int) Math.round(fired.get(2) * imageWidth),
+				y0 = (int) Math.round(fired.get(1) * imageHeight), y1 = (int) Math.round(fired.get(3) * imageHeight);
+
+		if (x0 == x1) {
+			int yDiff = y1 - y0;
+			for (int i = 0; i < yDiff; i++) {
+				int index = (y0 + i) * imageWidth + x0;
+				if (index >= workingList.size() || index < 0) {
+					continue;
+				}
+				workingList.set(index, fired.get(4));
+			}
+		} else {
+			if (x0 > x1) {
+				int temp = x0;
+				x0 = x1;
+				x1 = temp;
+				temp = y0;
+				y0 = y1;
+				y1 = temp;
+			}
+			int xDiff = x1 - x0, yDiff = y1 - y0;
+			double slope = ((double) yDiff) / ((double) xDiff);
+			for (int i = 0; i < xDiff; i++) {
+				int index = (int) Math.round((y0 + i * slope) * imageWidth + x0 + i);
+				if (index >= workingList.size() || index < 0) {
+					continue;
+				}
+				workingList.set(index, fired.get(4));
+			}
+		}
 	}
 
 	private static List<List<Double>> evolve(List<List<Double>> input, double swapRate, double mutateRate,
@@ -96,41 +124,61 @@ public class Main {
 		Image base = new Image(goal.getWidth(), goal.getHeight());
 		String timestamp = Long.toString(new Date().getTime());
 
-		int numInputs = goal.getWidth() * goal.getHeight(), numOutputs = numInputs, numLayers = 1, numNetworks = 50;
-		double minWeight = -1, maxWeight = 1, swapRate = 0.7, mutateRate = 0.05;
+		int numLinesDraw = 25;
+		int numInputs = goal.getWidth() * goal.getHeight(), numOutputs = 5 * numLinesDraw, numLayers = 1,
+				numNetworks = 10;
+		double minWeight = -10, maxWeight = 10, swapRate = 0.7, mutateRate = 0.1;
 
-		List<NeuralNetwork> networks = new ArrayList<NeuralNetwork>();
-		while (networks.size() < numNetworks) {
-			networks.add(new NeuralNetwork(numInputs, numOutputs, numLayers, minWeight, maxWeight));
+		NeuralNetwork network = new NeuralNetwork(numInputs, numOutputs, numLayers, minWeight, maxWeight);
+		List<List<Double>> networksData = new ArrayList<List<Double>>();
+		while (networksData.size() < numNetworks) {
+			networksData.add(network.getAllNeuronWeights());
 		}
 
-		List<Double> neuralInput = fromImageToNeural(base.getAllPixelRGB()), bestFired = null;
+		List<Double> neuralInput = fromImageToNeural(base.getAllPixelRGB()), bestNetworkData = null;
+		List<Integer> bestRGB = null;
 		double bestFitness = 0;
+		boolean shouldWrite = true;
 
 		for (int generationIndex = 0; true; generationIndex++) {
 			List<List<Double>> gaInput = new ArrayList<List<Double>>();
 			List<Double> fitnessList = new ArrayList<Double>();
-			for (int networkIndex = 0; networkIndex < networks.size(); networkIndex++) {
-				NeuralNetwork network = networks.get(networkIndex);
-				List<Double> fired = network.fire(neuralInput);
-				List<Integer> neuralOutput = fromNeuralToImage(fired);
+			for (int networkIndex = 0; networkIndex < networksData.size(); networkIndex++) {
+				List<Double> networkData = networksData.get(networkIndex);
+				network.setAllNeuronWeights(networkData);
+				List<Double> workingList = neuralInput.subList(0, neuralInput.size());
+				List<Double> fired = network.fire(workingList);
+				for (int i = 0; i < numLinesDraw; i++) {
+					draw(workingList, fired.subList(i * 5, (i + 1) * 5), goal.getWidth(), goal.getHeight());
+				}
+				List<Integer> neuralOutput = fromNeuralToImage(workingList);
 				double fitness = getFitness(neuralOutput, imageGoal);
 				int fitnessIndex = findSpot(fitnessList, fitness);
 				if (fitnessIndex < numNetworks) {
 					gaInput.add(fitnessIndex, network.getAllNeuronWeights());
 					fitnessList.add(fitnessIndex, fitness);
 					if (fitness > bestFitness) {
-						bestFired = fired;
+						bestNetworkData = networkData.subList(0, networkData.size());
+						bestRGB = neuralOutput;
 						bestFitness = fitness;
+						shouldWrite = true;
 					}
 				}
 			}
-			Image bestImage = new Image(goal.getWidth(), goal.getHeight());
-			bestImage.setAllPixelRGB(fromNeuralToImage(bestFired));
-			bestImage.writeFile("assets/" + timestamp + "/" + generationIndex + ".png");
+			while (fitnessList.size() > numNetworks) {
+				int index = fitnessList.size() - 1;
+				fitnessList.remove(index);
+				gaInput.remove(index);
+			}
+			if (shouldWrite) {
+				Image bestImage = new Image(goal.getWidth(), goal.getHeight());
+				bestImage.setAllPixelRGB(bestRGB);
+				bestImage.writeFile("assets/" + timestamp + "/" + generationIndex + ".png");
+				shouldWrite = false;
+			}
 			System.out.println(generationIndex + " " + bestFitness);
-			List<List<Double>> gaOutput = evolve(gaInput, swapRate, mutateRate, numNetworks, minWeight, maxWeight);
-			setAllWeights(networks, gaOutput);
+			networksData = evolve(gaInput, swapRate, mutateRate, numNetworks, minWeight, maxWeight);
+			networksData.add(bestNetworkData);
 		}
 	}
 }

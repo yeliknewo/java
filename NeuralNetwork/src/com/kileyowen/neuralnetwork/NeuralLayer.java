@@ -51,4 +51,12 @@ public class NeuralLayer {
 		}
 		return weightCount;
 	}
+
+	public int getNeuronCount() {
+		return neurons.size();
+	}
+
+	public Neuron getNeuron(int neuronIndex) {
+		return neurons.get(neuronIndex);
+	}
 }

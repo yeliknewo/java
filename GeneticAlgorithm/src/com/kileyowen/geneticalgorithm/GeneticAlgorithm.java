@@ -20,12 +20,13 @@ public class GeneticAlgorithm {
 		if (currentGeneration == null) {
 			currentGeneration = new ArrayList<Image>();
 			while (currentGeneration.size() < generationSize) {
-				Image base = new Image(goal.getWidth(), goal.getHeight());
-				for (int y = 0; y < base.getHeight(); y++) {
-					for (int x = 0; x < base.getWidth(); x++) {
-						base.setPixel(x, y, new Color(rand.nextInt(0xFFFFFF)));
-					}
-				}
+				// Image base = new Image(goal.getWidth(), goal.getHeight());
+				// for (int y = 0; y < base.getHeight(); y++) {
+				// for (int x = 0; x < base.getWidth(); x++) {
+				// base.setPixel(x, y, new Color(rand.nextInt(0xFFFFFF)));
+				// }
+				// }
+				Image base = new Image("assets/hedgehog.jpeg");
 				currentGeneration.add(base);
 			}
 		}
@@ -127,12 +128,12 @@ public class GeneticAlgorithm {
 
 	public static void main(String[] args) {
 		rand = new Random();
-		GeneticAlgorithm main = new GeneticAlgorithm(new Image("assets/hedgehog.jpeg"));
+		GeneticAlgorithm main = new GeneticAlgorithm(new Image("assets/hedgehog2.jpeg"));
 		String startTime = Long.toString(new Date().getTime());
 		for (int generationIndex = 0; true; generationIndex++) {
-			main.makeNextGeneration(0.7, 0.01, 50);
+			main.makeNextGeneration(0.7, 0.05, 50);
 			System.out.println(generationIndex + " " + main.bestFitness);
-			if (generationIndex % 100 == 0)
+			if (generationIndex % 1 == 0)
 				main.best.writeFile("assets/" + startTime + "/out" + generationIndex + ".png");
 		}
 	}

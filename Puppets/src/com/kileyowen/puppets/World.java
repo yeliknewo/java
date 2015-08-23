@@ -14,6 +14,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class World implements GameObject {
 	private Vector3f camera;
 	private List<GameObject> gameObjects;
+	private float orthoX0, orthoX1, orthoY0, orthoY1, orthoZ0, orthoZ1, aspectRatio;
+	private int screenWidth, screenHeight;
 
 	public World() {
 		camera = new Vector3f().setCoords(0, 0, 0);
@@ -23,6 +25,29 @@ public class World implements GameObject {
 
 	public Vector3f getCamera() {
 		return camera;
+	}
+
+	public Vector3f screenToWorldPoint(double x, double y) {
+		y = screenHeight - y;
+		float orthoWidth = orthoX1 - orthoX0, orthoHeight = orthoY1 - orthoY0;
+		x = x / screenWidth * orthoWidth + camera.getX() - orthoWidth / 2;
+		y = y / screenHeight * orthoHeight + camera.getY() - orthoHeight / 2;
+		return new Vector3f((float) x, (float) y, 0);
+	}
+
+	public void setResolution(int screenWidth, int screenHeight) {
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+		aspectRatio = (float) (screenWidth) / (float) (screenHeight);
+	}
+
+	public void setOrthographicSize(float x0, float x1, float y0, float y1, float z0, float z1) {
+		orthoX0 = x0;
+		orthoX1 = x1;
+		orthoY0 = y0;
+		orthoY1 = y1;
+		orthoZ0 = z0;
+		orthoZ1 = z1;
 	}
 
 	@Override
